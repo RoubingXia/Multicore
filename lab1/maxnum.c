@@ -67,8 +67,9 @@ int main(int argc, char *argv[])
             int start = tid * step;
             int end = (tid == threads_count - 1) ? count : (tid + 1) * step;
             int local_map[4] = {0, 0, 0, 0};
-            for (i = start; i < end; i++) {
-                local_map[buffer[i] - 'a']++;
+            int k = 0;
+            for (k = start; k < end; k++) {
+                local_map[buffer[k] - 'a']++;
             }
             printf("I am thread %d, I process from %d to %d, my count for letter c is %d\n", tid, start, end, local_map[2]);
         #pragma omp critical
