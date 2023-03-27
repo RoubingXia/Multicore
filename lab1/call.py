@@ -59,6 +59,7 @@ idx = 0
 for thread_num in threads_list:
     # build row by row
     os.system("echo y | rm -f outlog")
+    suffix = 3
     for len_num in len_list:
         # build cells in one row
         # remove the old output file
@@ -70,8 +71,9 @@ for thread_num in threads_list:
         times = extract_time('outlog')
         data1[idx].append(str(times['real']) + "ms")
         data2[idx].append(str(times['user'] + times['sys']) + "ms")
+        suffix += 1
     idx += 1
-    suffix += 1
+
 
 
 print("\n")
