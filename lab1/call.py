@@ -58,6 +58,7 @@ idx = 0
 
 for thread_num in threads_list:
     # build row by row
+    os.system("echo y | rm outlog")
     for len_num in len_list:
         # build cells in one row
         # remove the old output file
