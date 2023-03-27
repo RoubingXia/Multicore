@@ -64,6 +64,7 @@ for thread_num in threads_list:
         # remove the old output file
         os.system("echo y | rm -f outlog")
         command = base_command.format(thread_num, len_num, suffix)
+        print("executing: " + command)
         os.system(command)
         os.system("cat outlog")
         times = extract_time('outlog')
