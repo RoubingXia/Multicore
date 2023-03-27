@@ -65,6 +65,7 @@ for thread_num in threads_list:
         os.system("echo y | rm -f outlog")
         command = base_command.format(thread_num, len_num, suffix)
         os.system(command)
+        os.system("cat outlog")
         times = extract_time('outlog')
         data1[idx].append(str(times['real']) + "ms")
         data2[idx].append(str(times['user'] + times['sys']) + "ms")
