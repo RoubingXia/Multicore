@@ -60,6 +60,8 @@ for thread_num in threads_list:
     # build row by row
     for len_num in len_list:
         # build cells in one row
+        # remove the old output file
+        os.system("echo y | rm outlog")
         command = base_command.format(thread_num, len_num, suffix)
         os.system(command)
         times = extract_time('outlog')
