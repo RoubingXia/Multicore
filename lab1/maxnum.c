@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
             for (i = start; i < end; i++) {
                 local_map[buffer[i] - 'a']++;
             }
-            printf("I am thread %d, my count for letter c is %d", tid, local_map[2]);
+            printf("I am thread %d, I process from %d to %d, my count for letter c is %d\n", tid, start, end, local_map[2]);
         #pragma omp critical
             {
                 for (i = 0; i < 4; i++) {
