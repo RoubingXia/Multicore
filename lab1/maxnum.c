@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "/opt/homebrew/opt/libomp/include/omp.h"
+#include <omp.h>
 /*
  * For the OpenMP version, the one with four threads, you need to do the following (Note: Some details are left on purpose for you to figure out):
 • Load the whole file in an array of characters (i.e. string). Assume its name is: list[]
@@ -67,12 +67,12 @@ int main(int argc, char *argv[])
             int start = tid * step;
             int end = (tid == threads_count - 1) ? count : (tid + 1) * step;
             int local_map[4] = {0, 0, 0, 0};
-            for (int i = start; i < end; i++) {
+            for (i = start; i < end; i++) {
                 local_map[buffer[i] - 'a']++;
             }
         #pragma omp critical
             {
-                for (int i = 0; i < 4; i++) {
+                for (i = 0; i < 4; i++) {
                     map[i] += local_map[i];
                 }
             }
@@ -80,7 +80,8 @@ int main(int argc, char *argv[])
     }
     fclose(fp);
     // find max
-    for (int j = 0; j < 4; ++j) {
+    int j = 0;
+    for (j = 0; j < 4; ++j) {
         if (map[j] > y) {
             y = map[j];
             x = (char)(j + 'a');
