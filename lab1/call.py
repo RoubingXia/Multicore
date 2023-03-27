@@ -58,11 +58,11 @@ idx = 0
 
 for thread_num in threads_list:
     # build row by row
-    os.system("echo y | rm outlog")
+    os.system("echo y | rm -f outlog")
     for len_num in len_list:
         # build cells in one row
         # remove the old output file
-        os.system("echo y | rm outlog")
+        os.system("echo y | rm -f outlog")
         command = base_command.format(thread_num, len_num, suffix)
         os.system(command)
         times = extract_time('outlog')
