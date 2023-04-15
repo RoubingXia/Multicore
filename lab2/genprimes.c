@@ -7,7 +7,24 @@
  * */
 
 
+void write_helper(string file_name, int[] primes) {
+    // write an array to a file
+    FILE *fptr;
 
+    fptr = fopen(file_name,"w");
+
+    if(fptr == NULL)
+    {
+        printf("Error!");
+        exit(1);
+    }
+    for (int i = 0; i < primes.size(); ++i) {
+        int line_num = i;
+        int prime = primes[i];
+        fprintf(fptr,"%d %d\n",line_num, prime);
+    }
+    fclose(fptr);
+}
 int main(int argc, char *argv[])
 {
 
@@ -18,15 +35,14 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-/*
+    int threads_count = argc[2];
     // parallel program start here
     if (threads_count == 0) {
         //sequential
-        while(buffer[i] != '\0') {
-            map[buffer[i] - 'a']++;
-            ++i;
-        }
+        int[] test_arr = {2,3,5,7};
+        write_helper("output", test_arr);
     }
+    /*
     else {
         int step = count / threads_count;
         #pragma omp parallel num_threads(threads_count)
