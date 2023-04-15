@@ -27,19 +27,19 @@ void write_helper(char file_name[], int primes[]) {
 }
 int* getPrimes(int n) {
     // return the array of primes to n
-    bool isPrime[n + 1];
+    int isPrime[n + 1];
     int count = 0;
     for (int i = 0; i <= n; ++i) {
-        isPrime[i] = false;
+        isPrime[i] = 0;
     }
-    isPrime[2] = true;
+    isPrime[2] = 1;
     for (int p = 2; p < (n / 2); p = p * p) {
         for (int j = p; j < p * p; j += p) {
-            isPrime[j] = true;
+            isPrime[j] = 1;
         }
     }
     for (int i = 2; i <= n; ++i) {
-        if (isPrime[i]) {
+        if (isPrime[i] == 1) {
             count++;
         }
     }
@@ -47,7 +47,7 @@ int* getPrimes(int n) {
     int k = 0;
     for (int i = 2; i <= n; ++i) {
 
-        if (isPrime[i]) {
+        if (isPrime[i] == 1) {
             res[k++] = i;
         }
     }
