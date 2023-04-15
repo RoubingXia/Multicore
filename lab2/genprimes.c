@@ -7,7 +7,7 @@
  * */
 
 
-void write_helper(string file_name, int[] primes) {
+void write_helper(char file_name[], int primes[]) {
     // write an array to a file
     FILE *fptr;
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     // parallel program start here
     if (threads_count == 0) {
         //sequential
-        int[] test_arr = {2,3,5,7};
+        int test_arr[] = {2,3,5,7};
         write_helper("output", test_arr);
     }
     /*
