@@ -67,10 +67,11 @@ int main(int argc, char *argv[])
     // parallel program start here
     if (threads_count == 0) {
         //sequential
-        int test_arr[] = {2,3,5,7};
-        int size_n = sizeof(test_arr) / sizeof(test_arr[0]);
+        //int test_arr[] = {2,3,5,7};
+        //int size_n = sizeof(test_arr) / sizeof(test_arr[0]);
         int res = getPrimes(primeN);
-        write_helper("output", test_arr, size_n);
+        int size_n = sizeof(res) / sizeof(res[0]);
+        write_helper("output", res, size_n);
     }
     /*
     else {
