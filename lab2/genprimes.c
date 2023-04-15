@@ -12,18 +12,46 @@ void write_helper(char file_name[], int primes[]) {
     FILE *fptr;
     size_t n = sizeof(primes) / sizeof(primes[0]);
     fptr = fopen(file_name,"w");
-
+    printf("Hello, the size n is %d", n);
     if(fptr == NULL)
     {
         printf("Error!");
         exit(1);
     }
     for (int i = 0; i < n; ++i) {
-        int line_num = i;
+        int line_num = i + 1;
         int prime = primes[i];
         fprintf(fptr,"%d %d\n",line_num, prime);
     }
     fclose(fptr);
+}
+int* getPrimes(int n) {
+    // return the array of primes to n
+    bool isPrime[n + 1];
+    int count = 0;
+    for (int i = 0; i <= n; ++i) {
+        isPrime[i] = false;
+    }
+    isPrime[2] = true;
+    for (int p = 2; p < (n / 2); p = p * p) {
+        for (int j = p; j < p * p; j += p) {
+            isPrime[j] = true;
+        }
+    }
+    for (int i = 2; i <= n; ++i) {
+        if (isPrime[i]) {
+            count++;
+        }
+    }
+    int res[count];
+    int k = 0;
+    for (int i = 2; i <= n; ++i) {
+
+        if (isPrime[i]) {
+            res[k++] = i;
+        }
+    }
+    return res;
 }
 int main(int argc, char *argv[])
 {
