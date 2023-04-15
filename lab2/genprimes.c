@@ -31,9 +31,9 @@ int* getPrimes(int n, int* size) {
     for (int i = 0; i <= n; ++i) {
         isPrime[i] = 1;
     }
-    for (int p = 2; p * p < n; p++) {
+    for (int p = 2; p * p <= n; p++) {
         if (isPrime[p] == 1) {
-            for (int j = p * p; j < n; j += p) {
+            for (int j = p * p; j <= n; j += p) {
                 isPrime[j] = 0;
             }
         }
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         //int test_arr[] = {2,3,5,7};
         //int size_n = sizeof(test_arr) / sizeof(test_arr[0]);
         int size_n = 0;
-        int* res = getPrimes(primeN, size_n);
+        int* res = getPrimes(primeN, &size_n);
         write_helper("output", res, size_n);
     }
     /*
