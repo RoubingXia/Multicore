@@ -7,10 +7,9 @@
  * */
 
 
-void write_helper(char file_name[], int primes[]) {
+void write_helper(char file_name[], int primes[], int n) {
     // write an array to a file
     FILE *fptr;
-    size_t n = sizeof(primes) / sizeof(primes[0]);
     fptr = fopen(file_name,"w");
     printf("Hello, the size n is %d\n", n);
     if(fptr == NULL)
@@ -69,8 +68,9 @@ int main(int argc, char *argv[])
     if (threads_count == 0) {
         //sequential
         int test_arr[] = {2,3,5,7};
+        int size_n = sizeof(test_arr) / sizeof(test_arr[0]);
         int res = getPrimes(primeN);
-        write_helper("output", test_arr);
+        write_helper("output", test_arr, size_n);
     }
     /*
     else {
