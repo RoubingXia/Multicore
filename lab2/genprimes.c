@@ -10,7 +10,7 @@
 void write_helper(char file_name[], int primes[]) {
     // write an array to a file
     FILE *fptr;
-
+    size_t n = sizeof(primes) / sizeof(primes[0]);
     fptr = fopen(file_name,"w");
 
     if(fptr == NULL)
@@ -18,7 +18,7 @@ void write_helper(char file_name[], int primes[]) {
         printf("Error!");
         exit(1);
     }
-    for (int i = 0; i < primes.size(); ++i) {
+    for (int i = 0; i < n; ++i) {
         int line_num = i;
         int prime = primes[i];
         fprintf(fptr,"%d %d\n",line_num, prime);
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    int threads_count = argc[2];
+    int threads_count = atoi(argv[2]);
     // parallel program start here
     if (threads_count == 0) {
         //sequential
