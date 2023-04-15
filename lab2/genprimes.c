@@ -24,17 +24,18 @@ void write_helper(char file_name[], int primes[], int n) {
     }
     fclose(fptr);
 }
-int* getPrimes(int n) {
+int* getPrimes(int n, int* size) {
     // return the array of primes to n
     int isPrime[n + 1];
     int count = 0;
     for (int i = 0; i <= n; ++i) {
-        isPrime[i] = 0;
+        isPrime[i] = 1;
     }
-    isPrime[2] = 1;
-    for (int p = 2; p < (n / 2); p = p * p) {
-        for (int j = p; j < p * p; j += p) {
-            isPrime[j] = 1;
+    for (int p = 2; p * p < n; p++) {
+        if (isPrime[p] == 1) {
+            for (int j = p * p; j < n; j += p) {
+                isPrime[j] = 0;
+            }
         }
     }
     for (int i = 2; i <= n; ++i) {
@@ -42,7 +43,7 @@ int* getPrimes(int n) {
             count++;
         }
     }
-    int res[count];
+    int* res = (int*)malloc(sizeof(int) * count);
     int k = 0;
     for (int i = 2; i <= n; ++i) {
 
@@ -50,6 +51,7 @@ int* getPrimes(int n) {
             res[k++] = i;
         }
     }
+    *size = count;
     return res;
 }
 int main(int argc, char *argv[])
@@ -69,8 +71,8 @@ int main(int argc, char *argv[])
         //sequential
         //int test_arr[] = {2,3,5,7};
         //int size_n = sizeof(test_arr) / sizeof(test_arr[0]);
-        int res = getPrimes(primeN);
-        int size_n = sizeof(res) / sizeof(res[0]);
+        int size_n = 0;
+        int* res = getPrimes(primeN, size_n);
         write_helper("output", res, size_n);
     }
     /*
