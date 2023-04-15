@@ -12,7 +12,7 @@ void write_helper(char file_name[], int primes[]) {
     FILE *fptr;
     size_t n = sizeof(primes) / sizeof(primes[0]);
     fptr = fopen(file_name,"w");
-    printf("Hello, the size n is %d", n);
+    printf("Hello, the size n is %d\n", n);
     if(fptr == NULL)
     {
         printf("Error!");
@@ -64,10 +64,12 @@ int main(int argc, char *argv[])
     }
 
     int threads_count = atoi(argv[2]);
+    int primeN = atoi(argv[1]);
     // parallel program start here
     if (threads_count == 0) {
         //sequential
         int test_arr[] = {2,3,5,7};
+        int res = getPrimes(primeN);
         write_helper("output", test_arr);
     }
     /*
