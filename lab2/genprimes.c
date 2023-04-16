@@ -26,23 +26,10 @@ void write_helper(char file_name[], int primes[], int n) {
 }
 
 int* getPrimes(int n, int* size) {
-    /*
-    1. Generate all numbers from 2 to N.
-    2. First number is 2, so remove all numbers that are multiple of 2 (i.e. 4, 6, 8, ... N). Do not
-    remove the 2 itself.
-    3. Following number is 3, so remove all multiple of 3 that have not been removed from the
-    previous step. That will be: 9, 15, ... till you reach N.
-    4. The next number that has not been crossed so far is 5. So, remove all multiple of 5 that
-    have not been crossed before, till you reach N.
-    5. Continue like this till floor((N+1)/2).
-    6. The remaining numbers are the prime numbers.
-    */
-    printf("Alive 001");
     int* candidates = (int*)malloc(sizeof(int)*(n + 1));
     for (int i = 0; i <= n; ++i) {
         candidates[i] = 1;
     }
-    printf("Alive 002");
     for (int p = 2; p <= ((n + 1) / 2); ++p) {
         if (candidates[p] == 1) {
             for (int j = p; j <= n; j += p) {
@@ -51,7 +38,6 @@ int* getPrimes(int n, int* size) {
             }
         }
     }
-    printf("Alive 003");
     int count = 0;
     for (int i = 2; i <= n; ++i) {
         if (candidates[i] == 1) count++;
@@ -62,16 +48,79 @@ int* getPrimes(int n, int* size) {
         printf("allocate failed");
         exit(2);
     }
-    printf("Alive 004");
     int k = 0;
     for (int i = 2; i <= n; ++i) {
         if (candidates[i] == 1) {
             res[k++] = i;
         }
     }
-    printf("Alive 005");
+
     return res;
 }
+
+
+void getPrimesM(int n, int* size, int t, int* res) {
+    // each thread handle a chunk of input range
+    int* candidates = (int*)malloc(sizeof(int)*(n + 1));
+    int res_count = 0; // total prime numbers
+    int step = n / threads_count;
+    // get the starting point for each thread
+    int len1 = 0;// length of start_points
+    int* start_points = getPrimes(600, &len1); // find the first 100 primes, use them as starting points for each thread
+    int local_count[t]; // use to count the number of primes in each chunk
+    #pragma omp parallel num_threads(threads_count)
+    {
+        int tid = omp_get_thread_num();
+        int start = tid * step;
+        int end = (tid == threads_count - 1) ? n : (tid + 1) * step;
+        int first_prime = start_points[tid]; // the first prime in current chunk
+        for (int i = start; i <= end; ++i) {
+            candidates[i] = 1;
+        }
+        for (int p = first_prime; p <= ((end + 1) / 2); ++p) {
+            if (candidates[p] == 1) {
+                for (int j = p; j <= end; j += p) {
+                    if (j == p) continue;
+                    candidates[j] = 0;
+                }
+            }
+        }
+        for (int i = start; i <= end; ++i) {
+            if (i < 2) continue;
+            if (candidates[i] == 1) local_count[tid]++;
+        }
+        // get total count
+        #pragma omp critical
+        {
+            for (int i = 0; i < t; ++i) {
+                res_count += local_count[i];
+            }
+            res = (int*)malloc(sizeof(int) * res_count);
+            // copy to res, how to parallelize this part?
+            int k = 0;
+            for (int i = 2; i <= n; ++i) {
+                if (candidates[i] == 1) {
+                    res[k++] = i;
+                }
+            }
+        }
+        /*
+        // Wait so, ever thread will have a right res_count
+        #pragma omp barrier
+        int k = ;
+        for (int i = 2; i <= n; ++i) {
+            if (candidates[i] == 1) {
+                res[k++] = i;
+            }
+        }
+        */
+    }
+
+
+    return res;
+}
+
+
 int main(int argc, char *argv[])
 {
 
@@ -82,66 +131,23 @@ int main(int argc, char *argv[])
         printf("t: the number of threads and is a positive integer that does not exceed 100\n");
         exit(1);
     }
-/*
- * double tstart = 0.0, tend=0.0, ttaken;
-Read the input from the command line
-tstart = omp_get_wtime();
-Generate the prime numbers (as indicated by the algorithm above)This will be the parallel part ttaken = omp_get_wtime() - t_start;
-printf(“Time take for the main part: %f\n”, ttaken);
-Write the output file and exit.
- *
- * */
     int threads_count = atoi(argv[2]);
     int primeN = atoi(argv[1]);
+    int size_n = 0;
+    int* res;
     // get start time
     tstart = omp_get_wtime();
     // parallel program start here
     if (threads_count == 0) {
         //sequential
-        //int test_arr[] = {2,3,5,7};
-        //int size_n = sizeof(test_arr) / sizeof(test_arr[0]);
-        int size_n = 0;
-        printf("Alive 0001");
-        int* res = getPrimes(primeN, &size_n);
-        printf("Alive 0002");
-        write_helper("output", res, size_n);
+        res = getPrimes(primeN, &size_n);
+
     }
-    /*
     else {
-        int step = count / threads_count;
-        #pragma omp parallel num_threads(threads_count)
-        {
-            int tid = omp_get_thread_num();
-            int start = tid * step;
-            int end = (tid == threads_count - 1) ? count : (tid + 1) * step;
-            int local_map[4] = {0, 0, 0, 0};
-            int k = 0;
-            for (k = start; k < end; k++) {
-                local_map[buffer[k] - 'a']++;
-            }
-            //printf("I am thread %d, I process from %d to %d, my count for letter c is %d\n", tid, start, end, local_map[2]);
-        #pragma omp critical
-            {
-                for (i = 0; i < 4; i++) {
-                    map[i] += local_map[i];
-                }
-            }
-        }
+        getPrimesM(primeN, &size_n, threads_count, res);
     }
-    fclose(fp);
-    // find max
-    int j = 0;
-    for (j = 0; j < 4; ++j) {
-        if (map[j] > y) {
-            y = map[j];
-            x = (char)(j + 'a');
-        }
-    }
-    // print output
-    printf(" %c occurred the most %d times of a total of %d characters.\n", x, y, count);
-    free(buffer);
-    */
     ttaken = omp_get_wtime() - tstart;
     printf("Time take for the main part: %f\n", ttaken);
+    write_helper("output", res, size_n);
     return 0;
 }
