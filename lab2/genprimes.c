@@ -37,13 +37,13 @@ int* getPrimes(int n, int* size) {
     5. Continue like this till floor((N+1)/2).
     6. The remaining numbers are the prime numbers.
     */
-    int candidates[n + 1];
     printf("Alive 001");
+    int candidates[n + 1];
     for (int i = 0; i <= n; ++i) {
         candidates[i] = 1;
     }
     printf("Alive 002");
-    for (int p = 2; p <= (n + 1) / 2; ++p) {
+    for (int p = 2; p <= ((n + 1) / 2); ++p) {
         if (candidates[p] == 1) {
             for (int j = p * p; j <= n; j += p) {
                 candidates[j] = 0;
@@ -132,7 +132,9 @@ Write the output file and exit.
         //int test_arr[] = {2,3,5,7};
         //int size_n = sizeof(test_arr) / sizeof(test_arr[0]);
         int size_n = 0;
+        printf("Alive 0001");
         int* res = getPrimes(primeN, &size_n);
+        printf("Alive 0002");
         write_helper("output", res, size_n);
     }
     /*
