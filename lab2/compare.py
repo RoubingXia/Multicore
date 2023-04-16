@@ -10,6 +10,7 @@ with open("1stmillion.txt", "r") as f2:
                     continue
                 out_line = str(line_num) + " " + cell
                 f3.write(out_line)
+                line_num += 1
                 f3.write("\n")
 
 
