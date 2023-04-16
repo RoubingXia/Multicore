@@ -65,7 +65,7 @@ int findNext(int thread_num, int thread_count, int n, int cur, int* candidates) 
     int count = 0;
     int dest = thread_count - thread_num;
     int next = cur;
-    while(count < dest) {
+    while(count < dest && next < n) {
         next++;
         if (candidates[next] == 1) {
             count++;
