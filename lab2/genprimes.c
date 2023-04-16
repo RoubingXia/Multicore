@@ -74,6 +74,7 @@ void getPrimesM(int n, int* size, int threads_count, int* res) {
         int start = tid * step;
         int end = (tid == threads_count - 1) ? n : (tid + 1) * step;
         int first_prime = start_points[tid]; // the first prime in current chunk
+        local_count[tid] = 0;// initialize own counter
         for (int i = start; i <= end; ++i) {
             candidates[i] = 1;
         }
