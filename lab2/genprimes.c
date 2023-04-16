@@ -116,6 +116,7 @@ void getPrimesM(int n, int* size, int threads_count, int* res) {
         }
         */
     }
+    free(start_points);
 }
 
 
@@ -139,7 +140,6 @@ int main(int argc, char *argv[])
     if (threads_count == 0) {
         //sequential
         res = getPrimes(primeN, &size_n);
-
     }
     else {
         getPrimesM(primeN, &size_n, threads_count, res);
@@ -147,5 +147,6 @@ int main(int argc, char *argv[])
     ttaken = omp_get_wtime() - tstart;
     printf("Time take for the main part: %f\n", ttaken);
     write_helper("output", res, size_n);
+    free(res);
     return 0;
 }
