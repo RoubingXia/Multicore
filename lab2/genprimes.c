@@ -38,9 +38,11 @@ int* getPrimes(int n, int* size) {
     6. The remaining numbers are the prime numbers.
     */
     int candidates[n + 1];
+    printf("Alive 001");
     for (int i = 0; i <= n; ++i) {
         candidates[i] = 1;
     }
+    printf("Alive 002");
     for (int p = 2; p <= (n + 1) / 2; ++p) {
         if (candidates[p] == 1) {
             for (int j = p * p; j <= n; j += p) {
@@ -48,19 +50,25 @@ int* getPrimes(int n, int* size) {
             }
         }
     }
+    printf("Alive 003");
     int count = 0;
     for (int i = 2; i <= n; ++i) {
         if (candidates[i] == 1) count++;
     }
     *size = count;
     int* res = (int*) malloc(sizeof(int) * count);
+    if (!res) {
+        rintf("allocate failed");
+        exit(2);
+    }
+    printf("Alive 004");
     int k = 0;
     for (int i = 2; i <= n; ++i) {
         if (candidates[i] == 1) {
             res[k++] = i;
         }
     }
-    *size = count;
+    printf("Alive 005");
     return res;
 }
 int* getPrimes2(int n, int* size) {
