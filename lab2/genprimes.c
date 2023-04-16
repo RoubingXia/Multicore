@@ -121,7 +121,7 @@ Write the output file and exit.
     printf(" %c occurred the most %d times of a total of %d characters.\n", x, y, count);
     free(buffer);
     */
-    ttaken = omp_get_wtime() - t_start;
+    ttaken = omp_get_wtime() - tstart;
     printf("Time take for the main part: %f\n", ttaken);
     return 0;
 }
