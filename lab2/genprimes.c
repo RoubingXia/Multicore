@@ -58,7 +58,7 @@ int* getPrimes(int n, int* size) {
     *size = count;
     int* res = (int*) malloc(sizeof(int) * count);
     if (!res) {
-        rintf("allocate failed");
+        printf("allocate failed");
         exit(2);
     }
     printf("Alive 004");
