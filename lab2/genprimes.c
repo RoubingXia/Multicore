@@ -57,15 +57,26 @@ int* getPrimes(int n, int* size) {
 int main(int argc, char *argv[])
 {
 
+    double tstart = 0.0, tend=0.0, ttaken;
     if(argc != 3 ){
         printf("usage: ./genprime N t\n");
         printf("N: positive number bigger than 2 \n");
         printf("t: the number of threads and is a positive integer that does not exceed 100\n");
         exit(1);
     }
-
+/*
+ * double tstart = 0.0, tend=0.0, ttaken;
+Read the input from the command line
+tstart = omp_get_wtime();
+Generate the prime numbers (as indicated by the algorithm above)This will be the parallel part ttaken = omp_get_wtime() - t_start;
+printf(“Time take for the main part: %f\n”, ttaken);
+Write the output file and exit.
+ *
+ * */
     int threads_count = atoi(argv[2]);
     int primeN = atoi(argv[1]);
+    // get start time
+    tstart = omp_get_wtime();
     // parallel program start here
     if (threads_count == 0) {
         //sequential
@@ -110,5 +121,7 @@ int main(int argc, char *argv[])
     printf(" %c occurred the most %d times of a total of %d characters.\n", x, y, count);
     free(buffer);
     */
+    ttaken = omp_get_wtime() - t_start;
+    printf("Time take for the main part: %f\n", ttaken);
     return 0;
 }
