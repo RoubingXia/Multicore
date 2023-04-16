@@ -112,7 +112,7 @@ void getPrimesM(int n, int* size, int threads_count, int* res) {
 
         // wait till the table been filled completely, then calculate the count
         #pragma omp barrier
-        for (int i = start; i <= end; ++i) {
+        for (int i = start + 1; i <= end; ++i) {
             if (i < 2) continue;
             if (candidates[i] == 1) local_count[tid]++;
         }
@@ -124,6 +124,7 @@ void getPrimesM(int n, int* size, int threads_count, int* res) {
                 res_count += local_count[i];
             }
             res = (int*)malloc(sizeof(int) * res_count);
+            *size = res_count;
             // copy to res, how to parallelize this part?
             int k = 0;
             for (int i = 2; i <= n; ++i) {
