@@ -92,7 +92,7 @@ void getPrimesM(int n, int* size, int threads_count, int* res) {
         // get total count
         #pragma omp critical
         {
-            for (int i = 0; i < t; ++i) {
+            for (int i = 0; i < threads_count; ++i) {
                 res_count += local_count[i];
             }
             res = (int*)malloc(sizeof(int) * res_count);
