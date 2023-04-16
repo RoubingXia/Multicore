@@ -3,9 +3,80 @@
 #include <time.h>
 #include <omp.h>
 /*
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+
+
+
+
+
+int main() {
+    int num_threads = 4;
+    int queue_size = 16;
+    Queue q;
+    init_queue(&q, queue_size);
+
+    // Enqueue some values
+    for (int i = 0; i < queue_size; i++) {
+        enqueue(&q, i);
+    }
+
+    // Consume the queue using OpenMP
+    #pragma omp parallel num_threads(num_threads)
+    {
+        int value;
+        while (!is_empty(&q)) {
+            value = dequeue(&q);
+            printf("Thread %d consumed %d\n", omp_get_thread_num(), value);
+        }
+    }
+
+    return 0;
+}
 
  * */
 
+// A simple queue implementation with a single mutex
+typedef struct {
+    int* data;
+    int front;
+    int rear;
+    int capacity;
+    omp_lock_t lock;
+} Queue;
+
+void init_queue(Queue* q, int capacity) {
+    q->data = malloc(capacity * sizeof(int));
+    q->front = 0;
+    q->rear = -1;
+    q->capacity = capacity;
+    omp_init_lock(&q->lock);
+}
+
+void enqueue(Queue* q, int value) {
+    omp_set_lock(&q->lock);
+    q->rear++;
+    q->data[q->rear] = value;
+    omp_unset_lock(&q->lock);
+}
+
+int dequeue(Queue* q) {
+    int value;
+    omp_set_lock(&q->lock);
+    value = q->data[q->front];
+    q->front++;
+    omp_unset_lock(&q->lock);
+    return value;
+}
+
+int is_empty(Queue* q) {
+    int empty;
+    omp_set_lock(&q->lock);
+    empty = q->front > q->rear;
+    omp_unset_lock(&q->lock);
+    return empty;
+}
 
 void write_helper(char file_name[], int primes[], int n) {
     // write an array to a file
@@ -82,6 +153,14 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
     int len1 = 0;// length of start_points
     int* start_points = getPrimes(600, &len1); // find the first half primes, use them as starting points for each thread
     int local_count[threads_count]; // use to count the number of primes in each chunk
+
+    int queue_size = 100;
+    Queue q;
+    init_queue(&q, queue_size);
+    // en queue the first 100 primes
+    for (int i = 0; i < queue_size; i++) {
+        enqueue(&q, start_points[i]);
+    }
     #pragma omp parallel num_threads(threads_count)
     {
         int tid = omp_get_thread_num();
@@ -96,6 +175,17 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
         // each thread fill different part of the table, e.g if two threads process N = 25, t0 will start with 2, fill
         // all numbers that are dividable by 2, and t1 start from 3, when t0 finished with 2, it should call findNext to
         // get the number 5, and check all numbers dividable by 5. before t0 call findNext should it wait?
+        int p;
+        while (!is_empty(&q)) {
+            p = dequeue(&q);
+            if (candidates[p] == 1) {
+                for (int j = p; j <= n; j += p) {
+                    if (j == p) continue;
+                    candidates[j] = 0;
+                }
+            }
+        }
+        /*
         int first_prime = start_points[tid];
         while(first_prime != -1) {
             int p = first_prime;
@@ -109,7 +199,7 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
             // findNext prime
             first_prime = findNext(tid, threads_count, n, first_prime, candidates);
         }
-
+*/
         // wait till the table been filled completely, then calculate the count
         #pragma omp barrier
         for (int i = start + 1; i <= end; ++i) {
