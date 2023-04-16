@@ -63,7 +63,7 @@ int findNext(int thread_num, int thread_count, int n, int cur, int* candidates) 
     // Algorithm: 1. Start from cur + 1, iterate the candidates every time meet a candidates[i] == 1, do count++
     //            2. When count == (thread_count - thread_num), that means this is the next start prime for thread_num
     int count = 0;
-    int dest = thread_count - thread_num;
+    int dest = thread_count;
     int next = cur;
     while(count < dest && next < n) {
         next++;
@@ -98,14 +98,14 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
         // get the number 5, and check all numbers dividable by 5. before t0 call findNext should it wait?
         int first_prime = start_points[tid];
         while(first_prime != -1) {
-            for (int p = first_prime; p <= ((n + 1) / 2); ++p) {
-                if (candidates[p] == 1) {
-                    for (int j = p; j <= n; j += p) {
-                        if (j == p) continue;
-                        candidates[j] = 0;
-                    }
+            int p = first_prime;
+            if (candidates[p] == 1) {
+                for (int j = p; j <= n; j += p) {
+                    if (j == p) continue;
+                    candidates[j] = 0;
                 }
             }
+
             // findNext prime
             first_prime = findNext(tid, threads_count, n, first_prime, candidates);
         }
