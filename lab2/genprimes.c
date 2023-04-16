@@ -45,7 +45,8 @@ int* getPrimes(int n, int* size) {
     printf("Alive 002");
     for (int p = 2; p <= ((n + 1) / 2); ++p) {
         if (candidates[p] == 1) {
-            for (int j = p * p; j <= n; j += p) {
+            for (int j = p; j <= n; j += p) {
+                if (j == p) continue;
                 candidates[j] = 0;
             }
         }
