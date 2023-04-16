@@ -59,15 +59,15 @@ int* getPrimes(int n, int* size) {
 }
 
 
-void getPrimesM(int n, int* size, int t, int* res) {
-    // each thread handle a chunk of input range
+void getPrimesM(int n, int* size, int threads_count, int* res) {
+    // each thread hand le a chunk of input range
     int* candidates = (int*)malloc(sizeof(int)*(n + 1));
     int res_count = 0; // total prime numbers
     int step = n / threads_count;
     // get the starting point for each thread
     int len1 = 0;// length of start_points
     int* start_points = getPrimes(600, &len1); // find the first 100 primes, use them as starting points for each thread
-    int local_count[t]; // use to count the number of primes in each chunk
+    int local_count[threads_count]; // use to count the number of primes in each chunk
     #pragma omp parallel num_threads(threads_count)
     {
         int tid = omp_get_thread_num();
