@@ -11,7 +11,7 @@ void write_helper(char file_name[], int primes[], int n) {
     // write an array to a file
     FILE *fptr;
     fptr = fopen(file_name,"w");
-    printf("Hello, the size n is %d\n", n);
+    //printf("Hello, the size n is %d\n", n);
     if(fptr == NULL)
     {
         printf("Error!");
@@ -24,8 +24,42 @@ void write_helper(char file_name[], int primes[], int n) {
     }
     fclose(fptr);
 }
+
 int* getPrimes(int n, int* size) {
+    /*
+    1. Generate all numbers from 2 to N.
+    2. First number is 2, so remove all numbers that are multiple of 2 (i.e. 4, 6, 8, ... N). Do not
+    remove the 2 itself.
+    3. Following number is 3, so remove all multiple of 3 that have not been removed from the
+    previous step. That will be: 9, 15, ... till you reach N.
+    4. The next number that has not been crossed so far is 5. So, remove all multiple of 5 that
+    have not been crossed before, till you reach N.
+    5. Continue like this till floor((N+1)/2).
+    6. The remaining numbers are the prime numbers.
+    */
+    int candidates[n + 1];
+    for (int i = 0; i <= n; ++i) {
+        candidates[i] = 1;
+    }
+    for (int p = 2; p <= (n + 1) / 2; ++p) {
+        if (candidates[p] == 1) {
+            for (int j = p * p; j <= n; j += p) {
+                candidates[j] = 0;
+            }
+        }
+    }
+    int count = 0;
+    for (int i = 2; i <= n; ++i) {
+        if (candidates[i] == 1) count++;
+    }
+    *size = count;
+    int* res = (int*) malloc(sizeof(int) * count);
+    return res;
+}
+int* getPrimes2(int n, int* size) {
     // return the array of primes to n
+
+
     int isPrime[n + 1];
     int count = 0;
     for (int i = 0; i <= n; ++i) {
