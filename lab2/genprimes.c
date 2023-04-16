@@ -54,6 +54,13 @@ int* getPrimes(int n, int* size) {
     }
     *size = count;
     int* res = (int*) malloc(sizeof(int) * count);
+    int k = 0;
+    for (int i = 2; i <= n; ++i) {
+        if (candidates[i] == 1) {
+            res[k++] = i;
+        }
+    }
+    *size = count;
     return res;
 }
 int* getPrimes2(int n, int* size) {
