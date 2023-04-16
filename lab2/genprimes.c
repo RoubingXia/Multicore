@@ -73,7 +73,7 @@ int findNext(int thread_num, int thread_count, int n, int cur, int* candidates) 
     }
     return next == cur ? -1 : next;// -1 means no primes left for check
 }
-void getPrimesM(int n, int* size, int threads_count, int* res) {
+void getPrimesM(int n, int* size, int threads_count, int** res) {
     // each thread hand le a chunk of input range
     int* candidates = (int*)malloc(sizeof(int)*(n + 1));
     int res_count = 0; // total prime numbers
@@ -123,13 +123,13 @@ void getPrimesM(int n, int* size, int threads_count, int* res) {
             for (int i = 0; i < threads_count; ++i) {
                 res_count += local_count[i];
             }
-            res = (int*)malloc(sizeof(int) * res_count);
+            *res = (int*)malloc(sizeof(int) * res_count);
             *size = res_count;
             // copy to res, how to parallelize this part?
             int k = 0;
             for (int i = 2; i <= n; ++i) {
                 if (candidates[i] == 1) {
-                    res[k++] = i;
+                    (*res)[k++] = i;
                 }
             }
         }
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
         res = getPrimes(primeN, &size_n);
     }
     else {
-        getPrimesM(primeN, &size_n, threads_count, res);
+        getPrimesM(primeN, &size_n, threads_count, &res);
     }
     ttaken = omp_get_wtime() - tstart;
     printf("Time take for the main part: %f\n", ttaken);
