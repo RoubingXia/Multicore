@@ -171,7 +171,7 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
         // get the number 5, and check all numbers dividable by 5. before t0 call findNext should it wait?
         int p = 2;
         while (!is_empty(&q) && p <= n) {
-            #pragma omp critical {
+            #pragma omp critical{
                 p = dequeue(&q);
             }
             if (p == -1) break;
