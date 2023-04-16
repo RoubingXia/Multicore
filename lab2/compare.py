@@ -12,6 +12,11 @@ with open("1stmillion.txt", "r") as f2:
                 f3.write(out_line)
                 line_num += 1
                 f3.write("\n")
+with open("expect", "r") as f1:
+    with open("output", "r") as f2:
+        for line1, line2 in zip(f1, f2):
+            if (line1 != line2):
+                print("Mismatch at {} vs {}".format(line1, line2))
 
 
 
