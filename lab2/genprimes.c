@@ -115,9 +115,6 @@ void getPrimesM(int n, int* size, int threads_count, int* res) {
         }
         */
     }
-
-
-    return res;
 }
 
 
