@@ -163,9 +163,8 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
     int step = n / threads_count;
     // get the starting point for each thread
     int len1 = 0;// length of start_points
-    int* start_points = getPrimes(600, &len1); // find the first half primes, use them as starting points for each thread
+    int* start_points = getPrimes((n + 1) / 2, &len1); // find the first half primes, use them as starting points for each thread
     int local_count[threads_count]; // use to count the number of primes in each chunk
-    len1 = threads_count; // only need threads_count of primes
     int queue_size = len1;
     Queue q;
     init_queue(&q, queue_size);
