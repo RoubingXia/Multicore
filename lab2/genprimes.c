@@ -151,8 +151,8 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
             *res = (int*)malloc(sizeof(int) * res_count);
             *size = res_count;
             // Copy to res
-            int k = start;
-            for (int i = start; i <= end; ++i) {
+            int k = 0;
+            for (int i = 2; i <= n; ++i) {
                 if (candidates[i] == 1) {
                     (*res)[k++] = i;
                 }
