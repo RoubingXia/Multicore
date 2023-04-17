@@ -123,7 +123,6 @@ int* getPrimes(int n, int* size) {
     return res;
 }
 
-
 int findNext(int thread_num, int thread_count, int n, int cur, int* candidates) {
     // This function should find the next unchecked prime number for thread_num
     // Algorithm: 1. Start from cur + 1, iterate the candidates every time meet a candidates[i] == 1, do count++
@@ -139,23 +138,6 @@ int findNext(int thread_num, int thread_count, int n, int cur, int* candidates) 
     }
     return next == cur ? -1 : next;// -1 means no primes left for check
 }
-
-int findNext(int n, int cur, int* candidates) {
-    // This function should find the next unchecked prime number for thread_num
-    // Algorithm: 1. Start from cur + 1, iterate the candidates every time meet a candidates[i] == 1, do count++
-    //            2. When count == (thread_count - thread_num), that means this is the next start prime for thread_num
-    int count = 0;
-    int dest = thread_count;
-    int next = cur;
-    while(count < dest && next < n) {
-        next++;
-        if (candidates[next] == 1) {
-            count++;
-        }
-    }
-    return next == cur ? -1 : next;// -1 means no primes left for check
-}
-
 void getPrimesM(int n, int* size, int threads_count, int** res) {
     // each thread hand le a chunk of input range
     int* candidates = (int*)malloc(sizeof(int)*(n + 1));
@@ -168,164 +150,11 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
     int queue_size = len1;
     Queue q;
     init_queue(&q, queue_size);
-    int last_prime = start_points[len1 - 1];// the last prime in current queue
     // en queue the first 100 primes
     for (int i = 0; i < queue_size; i++) {
         enqueue(&q, start_points[i]);
     }
-    // initialize candidates
     #pragma omp parallel num_threads(threads_count)
-    {
-        int tid = omp_get_thread_num();
-        int start = tid * step;
-        int end = (tid == threads_count - 1) ? n : (tid + 1) * step;
-        local_count[tid] = 0;// initialize own counter
-        for (int i = start; i <= end; ++i) {
-            candidates[i] = 1;
-        }
-    }
-    // all threads should wait after all numbers get initialized to 1
-    #pragma omp barrier
-    omp_set_num_threads(threads_count);  // set the number of threads for the parallel region
-    int flag = 0; // used to let main thread to start/end other threads
-    int complete = 0; // 1 means no prime left to process
-    #pragma omp parallel sections shared(flag, complete)
-    {
-        #pragma omp section
-            {
-                omp_set_num_threads(1);
-                // main thread, fill queue
-                while(last_prime != -1) {
-                    flag = 1;  // set flag to start other threads
-                    #pragma omp flush(flag)  // flush the flag value to memory
-                    while (flag == 1) {  // wait other threads consume all element in queue
-                        #pragma omp flush(flag)  // flush the flag value from memory
-                    }
-                    // fill queue
-                    int count = 0;
-                    int empty = 1;
-                    for (int i = last_prime + 1; i <= n && count < len1; ++i) {
-                        if (candidates[i] == 1) {
-                            // meet a prime
-                            count++;
-                            enqueue(&q, i);
-                            last_prime = i;
-                            empty = 0;
-                        }
-                    }
-                    // update last_prime
-                    if (empty == 1) {
-                        // no more primes
-                        last_prime = -1;
-                    }
-                }
-                // start other threads again to let them finish and exit the program
-                complete = 1;  // set complete to end other threads
-                #pragma omp flush(complete)  // flush the complete value to memory
-            }
-
-        #pragma omp section
-            {
-                // slave(or should I call non-main...) threads, process primes,
-                omp_set_num_threads(threads_count - 1);
-                while(complete == 0) {
-                    while (flag == 0) {  // wait for flag to be set by thread 1
-                        #pragma omp flush(flag)  // flush the flag value from memory
-                    }
-                    printf("Other threads starts\n");
-
-                    int p = 2;
-                    while (!is_empty(&q)) {
-                        #pragma omp critical
-                        {
-                            p = dequeue(&q);
-                        }
-                        if (p == -1) break;
-                        if (candidates[p] == 1) {
-                            for (int j = p; j <= n; j += p) {
-                                if (j == p) continue;
-                                candidates[j] = 0;
-                            }
-                        }
-                    }
-
-                    #pragma omp barrier // set flag to 0 when all threads finished this round
-                    flag = 0;  // set flag to start main thread
-                    #pragma omp flush(flag)  // flush the flag value to memory
-                }
-
-            }
-    }
-
-    // calculate the count and build the final result
-    #pragma omp barrier
-    #pragma omp parallel num_threads(threads_count)
-    {
-        int tid = omp_get_thread_num();
-        int start = tid * step;
-        int end = (tid == threads_count - 1) ? n : (tid + 1) * step;
-        for (int i = start + 1; i <= end; ++i) {
-            if (i < 2) continue;
-            if (candidates[i] == 1) local_count[tid]++;
-        }
-        // get total count
-        #pragma omp barrier
-        #pragma omp single
-        {
-            for (int i = 0; i < threads_count; ++i) {
-                res_count += local_count[i];
-            }
-            *res = (int*)malloc(sizeof(int) * res_count);
-            *size = res_count;
-            // copy to res, how to parallelize this part?
-            int k = 0;
-            for (int i = 2; i <= n; ++i) {
-                if (candidates[i] == 1) {
-                    (*res)[k++] = i;
-                }
-            }
-        }
-    }
-
-/*
- *
-
-
-
-    int num_threads = 2;  // set the number of threads to be used
-    omp_set_num_threads(num_threads);  // set the number of threads for the parallel region
-
-    int flag = 0;  // shared flag variable
-    #pragma omp parallel sections shared(flag)
-    {
-        #pragma omp section
-        {
-            // thread 1 code
-            printf("Thread 1 starts\n");
-            flag = 1;  // set flag to start thread 2
-            #pragma omp flush(flag)  // flush the flag value to memory
-        }
-
-        #pragma omp section
-        {
-            // thread 2 code
-            while (flag == 0) {  // wait for flag to be set by thread 1
-                #pragma omp flush(flag)  // flush the flag value from memory
-            }
-            printf("Thread 2 starts\n");
-
-            // thread 2 does some work
-
-            flag = 0;  // set flag to end thread 2
-            #pragma omp flush(flag)  // flush the flag value to memory
-        }
-    }
-
-
- * */
-
-/*
-#pragma omp parallel num_threads(threads_count)
     {
         int tid = omp_get_thread_num();
         int start = tid * step;
@@ -340,9 +169,8 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
         // all numbers that are dividable by 2, and t1 start from 3, when t0 finished with 2, it should call findNext to
         // get the number 5, and check all numbers dividable by 5. before t0 call findNext should it wait?
         int p = 2;
-        while (!is_empty(&q)) {
-            #pragma omp critical
-            {
+        while (!is_empty(&q) && p <= n) {
+            #pragma omp critical{
                 p = dequeue(&q);
             }
             if (p == -1) break;
@@ -352,13 +180,6 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
                     candidates[j] = 0;
                 }
             }
-        }
-        // wait other threads finish their last round
-        #pragma omp barrier
-        // find primes for next round
-        #pragma omp single
-        {
-            // start from the last_prime
         }
         // wait till the table been filled completely, then calculate the count
         #pragma omp barrier
@@ -383,7 +204,7 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
                 }
             }
         }
-    } */
+    }
     free(start_points);
 }
 
