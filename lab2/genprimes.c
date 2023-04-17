@@ -123,7 +123,8 @@ void getPrimesM(int n, int* size, int threads_count, int** res) {
         // all numbers that are dividable by 2, and t1 start from 3, when t0 finished with 2, it fetch the next prime from queue
         int p = 2;
         while (!is_empty(&q) && p <= n) {
-            #pragma omp critical{
+            #pragma omp critical
+            {
                 p = dequeue(&q);
             }
             if (p == -1) break;
